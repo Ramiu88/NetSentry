@@ -1,0 +1,16 @@
+node_modules/
+dist/
+build/
+
+.env
+.env.local
+backend/.env
+frontend/.env
+
+*.log
+npm-debug.log*
+
+.DS_Store
+
+# Postgres data volume if ever run locally outside Docker
+pgdata/

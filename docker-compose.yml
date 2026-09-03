@@ -1,0 +1,56 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    # Published to the host's localhost because the backend runs with
+    # network_mode: host below and can no longer reach this container via
+    # Docker's internal DNS (the "postgres" hostname only resolves on the
+    # default bridge network, which host networking bypasses entirely).
+    ports:
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    build: ./backend
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      # "localhost" here means the Docker host, not this container — correct
+      # specifically because of network_mode: host (see note on postgres above).
+      DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@localhost:5432/${POSTGRES_DB}
+      JWT_SECRET: ${JWT_SECRET}
+      ADMIN_USERNAME: ${ADMIN_USERNAME}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD}
+      SCAN_TARGET_CIDR: ${SCAN_TARGET_CIDR}
+      SCAN_CRON_SCHEDULE: ${SCAN_CRON_SCHEDULE}
+      CORS_ORIGIN: "*"
+    # Nmap needs to see the real LAN, not Docker's isolated bridge network.
+    # Only works as intended when the Docker host itself is Linux — see
+    # docs/ARCHITECTURE.md for the tradeoffs on Docker Desktop (mac/Windows).
+    network_mode: "host"
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        VITE_API_BASE_URL: ${BACKEND_PUBLIC_URL:-http://localhost:4000}
+    depends_on:
+      - backend
+    ports:
+      - "8080:80"
+
+volumes:
+  pgdata:
