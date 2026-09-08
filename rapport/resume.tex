@@ -1,0 +1,40 @@
+\chapter*{Résumé}
+\addcontentsline{toc}{chapter}{Résumé}
+\markboth{Résumé}{}
+
+\noindent\textbf{Contexte général.} Ce rapport s'inscrit dans le cadre d'un stage de
+perfectionnement de deux mois effectué au sein du département Informatique (IT) du
+Mövenpick Hôtel de Tanger. Le réseau local de l'hôtel voit se connecter, au fil du
+temps, un grand nombre d'équipements (postes fixes, imprimantes, terminaux mobiles,
+objets connectés), sans que le département IT dispose d'un moyen simple d'en garder un
+inventaire à jour.
+
+\vspace{0.3cm}
+\noindent\textbf{Objectif du projet.} L'objectif du projet est de développer un outil de
+découverte et de cartographie des équipements connectés au réseau local de l'hôtel,
+baptisé \textbf{NetSentry}, capable de scanner le réseau, d'identifier les équipements
+actifs (adresse IP, adresse MAC, fabricant, ports ouverts), de conserver un historique
+des scans, et de signaler automatiquement tout équipement inconnu apparaissant sur le
+réseau.
+
+\vspace{0.3cm}
+\noindent\textbf{Méthode.} La réalisation du projet s'appuie sur une mise à niveau sur
+les fondamentaux réseau (adressage IP/MAC, protocole ARP, notion de ports), puis sur la
+conception et le développement d'une architecture en trois couches : un moteur de scan
+reposant sur Nmap, une API backend (Node.js/Express) assurant l'orchestration, la
+persistance (PostgreSQL) et la détection d'anomalies, ainsi qu'un tableau de bord web
+(React) permettant à un administrateur IT de visualiser les équipements, l'historique
+des scans et les alertes. La solution est conteneurisée avec Docker afin de faciliter
+son déploiement.
+
+\vspace{0.3cm}
+\noindent\textbf{Résultats.} L'outil développé permet de scanner le réseau local, de
+recenser les équipements connectés avec leur fabricant et leurs ports ouverts, de
+conserver un historique complet des scans, et de générer une alerte dès qu'un équipement
+non reconnu se connecte au réseau. Le fonctionnement de l'ensemble de la chaîne --
+scan, backend, tableau de bord et déploiement conteneurisé -- a été vérifié de bout en
+bout durant le stage.
+
+\vspace{0.5cm}
+\noindent \textbf{Mots-clés :} Découverte réseau, Cartographie d'équipements, Nmap,
+Détection d'anomalies, Tableau de bord, Docker, NetSentry.

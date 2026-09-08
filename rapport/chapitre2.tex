@@ -1,0 +1,87 @@
+\chapter{Méthodologie de travail}
+
+Ce chapitre présente la méthodologie de travail suivie pour la réalisation du projet :
+l'analyse du besoin (exigences fonctionnelles et non fonctionnelles), le cahier des
+charges qui a cadré le stage, ainsi que les outils et technologies retenus.
+
+\section{Vue analytique sur le besoin}
+
+Avant le déploiement de NetSentry, le département IT du Mövenpick Hôtel de Tanger ne
+disposait d'aucun inventaire fiable des équipements connectés au réseau local : postes
+de travail, imprimantes, caméras, bornes Wi-Fi et appareils invités se multiplient sans
+qu'aucun outil ne permette de savoir, à un instant donné, combien d'appareils sont
+actifs, ni d'identifier une connexion inhabituelle ou non autorisée.
+
+L'analyse du besoin a permis de dégager trois exigences fonctionnelles principales :
+découvrir automatiquement les équipements présents sur le réseau et les identifier
+(adresse IP, adresse MAC, fabricant, ports ouverts) ; conserver un historique des
+détections afin de suivre l'apparition et la disparition des appareils dans le temps ;
+et signaler tout appareil détecté pour la première fois, afin que l'administrateur IT
+puisse le vérifier et, le cas échéant, le classer comme connu.
+
+Sur le plan non fonctionnel, la solution devait rester simple d'utilisation pour du
+personnel non spécialisé en réseau, s'exécuter de manière autonome (scans planifiés)
+sans intervention manuelle systématique, et ne transmettre aucune donnée du réseau
+interne vers des services externes. Ces contraintes ont directement guidé les choix
+d'architecture et de conception détaillés dans les sections suivantes.
+
+\section{Cahier des charges}
+
+Le cadrage du projet a été formalisé dans un cahier des charges remis en début de
+stage, définissant le contexte, les objectifs, le périmètre fonctionnel et non
+fonctionnel, ainsi que les contraintes et livrables attendus.
+
+\subsection{Livrables attendus}
+
+\begin{itemize}[leftmargin=1.2cm]
+    \item Code source de l'application (backend, frontend, scripts de scan).
+    \item Base de données structurée contenant l'historique des équipements détectés.
+    \item Tableau de bord fonctionnel de visualisation.
+    \item Image(s) Docker et instructions de déploiement.
+    \item Documentation technique et rapport de stage détaillant la démarche, les choix
+    techniques et les résultats obtenus.
+\end{itemize}
+
+\subsection{Contraintes}
+
+Le projet devait être réalisé dans un délai de deux mois, avec un accès limité aux
+systèmes métiers de l'hôtel (gérés par un prestataire externe). Le scan réseau ne
+pouvait être exécuté que sur le réseau interne de l'hôtel, avec l'autorisation du
+département IT, et la solution devait privilégier une base de données relationnelle
+(SQL) en cohérence avec les outils disponibles côté hôtel.
+
+\section{Outils et Technologies}
+
+\subsection{Outils employés}
+
+Les outils prévus pour ce projet sont : Node.js et Express pour le backend, une base de
+données SQL pour le stockage des équipements et de leur historique, Nmap pour la
+découverte réseau, ainsi que Docker pour la conteneurisation de l'application.
+
+\subsection{Environnement de travail}
+
+Le développement s'effectue en JavaScript (Node.js), avec un environnement de travail
+basé sur Visual Studio Code et un système de gestion de versions Git.
+
+\subsection{Synthèse des technologies retenues}
+
+Le tableau~\ref{tab:technos} récapitule l'ensemble des choix technologiques retenus pour
+chacune des couches de l'architecture NetSentry.
+
+\begin{table}[H]
+    \centering
+    \caption{Synthèse des technologies retenues par couche}
+    \label{tab:technos}
+    \begin{tabular}{@{}>{\raggedright\arraybackslash}p{3.6cm} >{\raggedright\arraybackslash}p{4.4cm} >{\raggedright\arraybackslash}p{6.6cm}@{}}
+        \toprule
+        \textbf{Couche} & \textbf{Technologie(s)} & \textbf{Rôle principal} \\
+        \midrule
+        Présentation & React (Vite) & Tableau de bord web \\
+        Logique métier (back-end) & Node.js / Express & API REST, orchestration, authentification (JWT) \\
+        Scan réseau & Nmap & Découverte des hôtes (ARP) et énumération des ports \\
+        Base de données & PostgreSQL & Équipements, historique des scans, alertes \\
+        Conteneurisation & Docker / Docker Compose & Empaquetage et déploiement de la solution \\
+        Gestion de version & Git / GitHub & Suivi des modifications du code source \\
+        \bottomrule
+    \end{tabular}
+\end{table}

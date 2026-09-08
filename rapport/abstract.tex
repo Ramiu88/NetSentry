@@ -1,0 +1,36 @@
+\chapter*{Abstract}
+\addcontentsline{toc}{chapter}{Abstract}
+\markboth{Abstract}{}
+
+\noindent\textbf{Context.} This report is part of a two-month internship carried out
+within the IT department of the Mövenpick Hôtel Tanger. Over time, a large number of
+devices connect to the hotel's local network (workstations, printers, mobile terminals,
+connected devices), without the IT department having a simple way to keep an up-to-date
+inventory of them.
+
+\vspace{0.3cm}
+\noindent\textbf{Objective.} The objective of the project is to develop a network
+device discovery and mapping tool, named \textbf{NetSentry}, able to scan the hotel's
+local network, identify active devices (IP address, MAC address, vendor, open ports),
+keep a history of scans, and automatically flag any unknown device appearing on the
+network.
+
+\vspace{0.3cm}
+\noindent\textbf{Method.} The project relies on an initial upskilling phase covering
+network fundamentals (IP/MAC addressing, the ARP protocol, ports), followed by the
+design and development of a three-layer architecture: an Nmap-based scanning engine, a
+backend API (Node.js/Express) handling orchestration, persistence (PostgreSQL) and
+anomaly detection, and a web dashboard (React) allowing an IT administrator to view
+devices, scan history and alerts. The solution is containerized with Docker to ease
+deployment.
+
+\vspace{0.3cm}
+\noindent\textbf{Results.} The resulting tool scans the local network, lists connected
+devices along with their vendor and open ports, keeps a full history of scans, and
+raises an alert whenever an unrecognized device joins the network. The full chain --
+scanning, backend, dashboard and containerized deployment -- was verified end to end
+during the internship.
+
+\vspace{0.5cm}
+\noindent \textbf{Keywords:} Network discovery, Device mapping, Nmap, Anomaly
+detection, Dashboard, Docker, NetSentry.
