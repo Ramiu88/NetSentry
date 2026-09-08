@@ -19,14 +19,30 @@
 \input{./contenu/abstract.tex}
 
 %------------ Table des matières ----------------
+% \listoffigures normally opens with an internal \chapter*, which always
+% forces a fresh page (\clearpage) regardless of how much room is left on
+% the current one. Redefine it to use the same heading style without the
+% forced page break, so it simply continues wherever the table of contents
+% left off instead of stranding its last few lines on an otherwise-blank
+% page. (\listoftables is intentionally not used: with only two tables in
+% the whole report, a dedicated list would itself be a near-empty page --
+% both tables stay fully captioned, numbered and cross-referenced in the
+% text.)
+\makeatletter
+\renewcommand\listoffigures{%
+    \addvspace{2em}%
+    \@makeschapterhead{\listfigurename}%
+    \addcontentsline{toc}{chapter}{\listfigurename}%
+    \@mkboth{\MakeUppercase\listfigurename}{\MakeUppercase\listfigurename}%
+    \@starttoc{lof}%
+}
+\makeatother
+
 \tabledematieres
 \listoffigures
-\newpage
-\listoftables
-\newpage
 
+\clearpage
 \input{./contenu/abreviations.tex}
-\newpage
 
 %------------ Corps du rapport ----------------
 \input{./contenu/introductionGenerale.tex}
