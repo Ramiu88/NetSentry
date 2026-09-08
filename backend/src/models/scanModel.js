@@ -1,9 +1,10 @@
 import { pool } from '../db/pool.js';
 
-export async function createScan(client, { targetCidr, trigger }) {
+export async function createScan(client, { targetCidr, trigger, triggeredByUserId = null }) {
   const { rows } = await client.query(
-    `INSERT INTO scans (target_cidr, trigger, status) VALUES ($1, $2, 'running') RETURNING *`,
-    [targetCidr, trigger]
+    `INSERT INTO scans (target_cidr, trigger, triggered_by_user_id, status)
+     VALUES ($1, $2, $3, 'running') RETURNING *`,
+    [targetCidr, trigger, triggeredByUserId]
   );
   return rows[0];
 }

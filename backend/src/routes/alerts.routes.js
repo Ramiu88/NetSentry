@@ -19,7 +19,7 @@ alertsRouter.patch('/:id', async (req, res, next) => {
     if (req.body?.is_acknowledged !== true) {
       return res.status(400).json({ error: 'Only { is_acknowledged: true } is supported' });
     }
-    const alert = await alertModel.acknowledgeAlert(req.params.id);
+    const alert = await alertModel.acknowledgeAlert(req.params.id, req.user.sub);
     if (!alert) return res.status(404).json({ error: 'Alert not found' });
     res.json(alert);
   } catch (err) {

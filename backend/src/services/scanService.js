@@ -12,9 +12,11 @@ import { logger } from '../utils/logger.js';
  * need to respond to an HTTP request immediately should await this, then run
  * executeScan(scan) without awaiting it.
  */
-export async function createScanRecord({ trigger = 'manual', targetCidr } = {}) {
+export async function createScanRecord({ trigger = 'manual', targetCidr, triggeredByUserId = null } = {}) {
   const cidr = targetCidr || env.scanTargetCidr;
-  return withClient((client) => scanModel.createScan(client, { targetCidr: cidr, trigger }));
+  return withClient((client) =>
+    scanModel.createScan(client, { targetCidr: cidr, trigger, triggeredByUserId })
+  );
 }
 
 /**

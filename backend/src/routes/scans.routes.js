@@ -12,7 +12,7 @@ scansRouter.post('/', async (req, res, next) => {
     }
 
     const { targetCidr } = req.body || {};
-    const scan = await createScanRecord({ trigger: 'manual', targetCidr });
+    const scan = await createScanRecord({ trigger: 'manual', targetCidr, triggeredByUserId: req.user.sub });
 
     // Fire and forget: the scan can take a while, the client polls GET /api/scans/:id.
     executeScan(scan).catch((err) => logger.error(`Manual scan ${scan.id} failed`, err));

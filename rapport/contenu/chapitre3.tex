@@ -25,13 +25,13 @@ sous-comportement \textbf{Détecter les appareils (Nmap)}, commun aux deux modes
 déclenchement. La figure~\ref{fig:usecase} présente l'ensemble de ces cas d'utilisation
 et de leurs relations.
 
-\begin{sidewaysfigure}
+\begin{figure}[H]
     \centering
-    \includegraphics[height=0.88\textheight]{figuresChapitres/use_case.png}
+    \includegraphics[height=0.8\textheight]{figuresChapitres/use_case.png}
     \caption{Diagramme de cas d'utilisation de NetSentry : l'authentification est
     incluse par l'ensemble des actions de l'administrateur IT}
     \label{fig:usecase}
-\end{sidewaysfigure}
+\end{figure}
 
 Comme le montre la figure~\ref{fig:usecase}, l'administrateur IT peut consulter le
 tableau de bord, lancer un scan manuel, consulter l'historique des scans, consulter les
@@ -92,8 +92,17 @@ chaque détection porte l'adresse IP observée, les ports ouverts et la date de 
 pour cette occurrence précise du scan. L'entité \textbf{ALERTE} est générée soit par la
 détection d'un nouvel appareil (association \textbf{GÉNÈRE}), soit par le scan qui l'a
 révélée (association \textbf{DÉCLENCHE}), et peut être acquittée par l'administrateur
-IT. Enfin, l'entité \textbf{UTILISATEUR}, dédiée à l'authentification, reste
-indépendante du domaine métier et n'entretient aucune relation avec les autres entités.
+IT.
+
+Enfin, l'entité \textbf{UTILISATEUR}, dédiée à l'authentification, est rattachée au
+domaine métier par deux associations : \textbf{LANCE} (0,n -- 0,1), qui trace
+l'utilisateur à l'origine d'un scan déclenché manuellement (un scan planifié par le
+\textit{cron} n'a naturellement aucun utilisateur associé), et \textbf{ACQUITTE} (0,n --
+0,1), qui trace l'utilisateur ayant acquitté une alerte. Ces deux associations,
+implémentées par les colonnes nullables \texttt{triggered\_by\_user\_id} sur
+\texttt{scans} et \texttt{acknowledged\_by\_user\_id} sur \texttt{alerts}, apportent une
+traçabilité utile même dans un contexte à administrateur unique, et prendront tout leur
+sens si plusieurs comptes IT venaient à être créés.
 
 \section{Conclusion}
 

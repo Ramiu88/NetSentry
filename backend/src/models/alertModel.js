@@ -24,10 +24,10 @@ export async function listAlerts({ acknowledged } = {}) {
   return rows;
 }
 
-export async function acknowledgeAlert(id) {
+export async function acknowledgeAlert(id, acknowledgedByUserId = null) {
   const { rows } = await pool.query(
-    'UPDATE alerts SET is_acknowledged = true WHERE id = $1 RETURNING *',
-    [id]
+    'UPDATE alerts SET is_acknowledged = true, acknowledged_by_user_id = $2 WHERE id = $1 RETURNING *',
+    [id, acknowledgedByUserId]
   );
   return rows[0] || null;
 }
