@@ -1,0 +1,122 @@
+\chapter{Contexte général du projet}
+\label{chap:contexte}
+
+\section{Introduction}
+
+Ce chapitre présente le contexte général dans lequel s'inscrit ce stage : l'entreprise
+d'accueil, le département Informatique (IT) au sein duquel le stage s'est déroulé, la
+problématique à l'origine du projet NetSentry, ainsi que les objectifs poursuivis.
+
+\section{Organisme d'accueil}
+
+\subsection{Présentation de l'entreprise}
+
+Le Mövenpick Hôtel de Tanger fait partie du groupe Mövenpick Hotels \& Resorts, une
+chaîne hôtelière internationale opérant dans le secteur de l'hôtellerie et du tourisme.
+L'établissement propose des prestations d'hébergement, de restauration et
+d'organisation d'événements, destinées principalement à une clientèle d'affaires et de
+loisirs.
+
+Le groupe Mövenpick a été fondé en 1948 à Zurich (Suisse) par Ueli Prager, initialement
+sous la forme d'un concept de restauration. Son activité hôtelière a débuté en 1973 avec
+l'ouverture de ses deux premiers hôtels à Zurich. Depuis septembre 2018, Mövenpick
+Hotels \& Resorts est intégralement détenu par le groupe Accor, ce qui lui permet de
+bénéficier de son réseau de distribution et de ses outils opérationnels à l'échelle
+internationale. Le groupe est aujourd'hui présent dans plusieurs dizaines de pays, avec
+une forte présence en Europe et au Moyen-Orient.
+
+L'hôtel de Tanger est structuré en plusieurs départements assurant chacun une fonction
+spécifique : la Direction Générale, les Ressources Humaines, la Finance, l'Hébergement
+(Front Office, Housekeeping), la Restauration, ainsi que le département Informatique
+(IT), au sein duquel s'est déroulé ce stage.
+
+\subsection{Environnement de l'entreprise}
+
+La clientèle du Mövenpick Hôtel de Tanger se compose principalement de voyageurs
+d'affaires, de touristes internationaux et de participants à des événements ou
+séminaires organisés au sein de l'établissement. L'hôtel fait par ailleurs appel à
+différents fournisseurs et prestataires externes, notamment pour la restauration, la
+maintenance des équipements, et la gestion des systèmes informatiques métiers (Property
+Management System -- PMS), assurée par un prestataire spécialisé externe au département
+IT interne. Le marché hôtelier de Tanger est marqué par la présence de plusieurs
+établissements internationaux et locaux, notamment dans les segments haut de gamme et
+affaires ; le Mövenpick se positionne comme un établissement haut de gamme, misant sur la
+qualité de service et son emplacement stratégique dans la ville.
+
+\subsection{Département d'accueil et mission}
+
+Le département Informatique assure la gestion et la maintenance du système
+d'information de l'hôtel : réseau informatique, postes de travail, imprimantes et
+équipements divers. Les systèmes métiers principaux (PMS, point de vente) sont gérés par
+un prestataire externe spécialisé, ce qui recentre l'activité du département IT interne
+sur l'infrastructure réseau et le support technique. Il intervient de façon transversale
+auprès de l'ensemble des autres départements de l'hôtel et assure la disponibilité et la
+sécurité du réseau utilisé par le personnel.
+
+Au sein de ce département, l'étudiant a été chargé de la conception et du développement
+d'un outil interne de découverte et de cartographie des équipements connectés au réseau
+informatique de l'hôtel, en complément des tâches de support courantes du département.
+
+\section{Contexte}
+
+Un réseau local d'hôtel voit se connecter, au fil du temps, un grand nombre
+d'équipements hétérogènes : postes fixes du personnel, imprimantes partagées, caméras de
+surveillance, bornes d'accès Wi-Fi, ainsi que des appareils invités (smartphones,
+ordinateurs portables) qui se connectent temporairement. Cette diversité et ce
+renouvellement permanent rendent difficile le maintien d'un inventaire fiable des
+équipements réellement présents sur le réseau à un instant donné.
+
+Avant le déploiement de NetSentry, le département IT du Mövenpick Hôtel de Tanger ne
+disposait d'aucun outil de ce type : la connaissance du réseau reposait uniquement sur la
+mémoire des techniciens et sur des vérifications ponctuelles et manuelles, sans
+historique ni mécanisme d'alerte.
+
+\section{Problématique}
+
+L'absence d'un inventaire automatisé et à jour des équipements connectés pose plusieurs
+difficultés concrètes pour le département IT :
+
+\begin{itemize}
+    \item Impossibilité de savoir, à un instant donné, combien d'appareils sont
+    effectivement actifs sur le réseau et lesquels ;
+    \item Absence de traçabilité : aucun historique ne permet de savoir quand un
+    équipement est apparu, ni de repérer sa disparition ;
+    \item Aucun mécanisme ne permet de détecter et de signaler la connexion d'un
+    équipement inconnu ou potentiellement non autorisé ;
+    \item Les vérifications, lorsqu'elles ont lieu, sont manuelles, ponctuelles et non
+    reproductibles, ce qui les rend peu fiables sur la durée.
+\end{itemize}
+
+Ces limitations exposent le réseau interne à un risque de connexions non maîtrisées et
+compliquent la tâche du département IT dans le suivi de son propre parc d'équipements. Il
+devient donc nécessaire de développer un outil automatisé, léger et autonome, capable de
+scanner régulièrement le réseau, de conserver un historique exploitable, et de signaler
+toute anomalie de façon proactive.
+
+\section{Objectifs du projet}
+
+Le projet NetSentry vise à répondre à cette problématique à travers les objectifs
+suivants :
+
+\begin{itemize}
+    \item \textbf{Découvrir} automatiquement les équipements connectés au réseau local
+    et les identifier (adresse IP, adresse MAC, fabricant, ports ouverts) ;
+    \item \textbf{Centraliser} ces informations dans une base de données persistante,
+    consultable via un tableau de bord ;
+    \item \textbf{Historiser} les scans afin de suivre l'apparition et la disparition des
+    équipements dans le temps ;
+    \item \textbf{Détecter et signaler} automatiquement tout équipement détecté pour la
+    première fois, afin que l'administrateur IT puisse le vérifier et, le cas échéant, le
+    classer comme connu ;
+    \item \textbf{Automatiser} l'exécution des scans (planification périodique), sans
+    intervention manuelle systématique ;
+    \item \textbf{Déployer} la solution de façon conteneurisée (Docker), pour en
+    faciliter l'installation et la portabilité sur un serveur de l'hôtel.
+\end{itemize}
+
+\section{Conclusion}
+
+Ce chapitre a permis de poser le cadre général du stage : l'entreprise d'accueil, le
+département Informatique, ainsi que la problématique et les objectifs à l'origine du
+projet NetSentry. Le chapitre suivant présente l'étude de l'existant et la méthodologie
+de travail retenue pour répondre à ces objectifs.

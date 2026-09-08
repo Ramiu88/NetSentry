@@ -1,0 +1,192 @@
+\chapter{Étude de l'existant et méthodologie de travail}
+\label{chap:etude_existant}
+
+\section{Introduction}
+
+Avant de concevoir NetSentry, il est utile d'examiner les solutions déjà disponibles
+pour la découverte et la supervision des équipements réseau, afin de justifier les choix
+retenus. Ce chapitre présente cette étude de l'existant, une analyse SWOT du projet, le
+cahier des charges qui a cadré le stage, ainsi que les exigences fonctionnelles et non
+fonctionnelles retenues pour NetSentry.
+
+\section{Solutions existantes}
+
+Plusieurs catégories d'outils permettent, à des degrés divers, de découvrir ou de
+superviser les équipements d'un réseau local :
+
+\subsection{Outils de scan en ligne de commande}
+\begin{itemize}
+    \item \textbf{Nmap} : scanner réseau open source, extrêmement puissant et précis
+    (découverte d'hôtes, détection de ports et de services), mais qui reste un outil en
+    ligne de commande : il ne conserve aucun historique entre deux exécutions et ne
+    propose ni tableau de bord, ni mécanisme d'alerte natif.
+\end{itemize}
+
+\subsection{Applications grand public}
+\begin{itemize}
+    \item \textbf{Fing} : application mobile de scan réseau simple d'utilisation,
+    orientée particuliers, avec des fonctionnalités d'historique et d'alerte limitées à
+    la version payante, et peu adaptée à un déploiement interne sur un serveur d'hôtel.
+    \item \textbf{Advanced IP Scanner} : utilitaire Windows léger de découverte
+    d'équipements, sans persistance des résultats ni planification automatique.
+\end{itemize}
+
+\subsection{Solutions de supervision professionnelles}
+\begin{itemize}
+    \item \textbf{PRTG Network Monitor} : solution de supervision réseau complète et
+    reconnue, mais commerciale, dont le coût de licence et la richesse fonctionnelle
+    dépassent largement les besoins d'un simple inventaire d'équipements pour un
+    département IT hôtelier.
+    \item \textbf{Zabbix / Nagios} : plateformes de supervision open source très
+    puissantes, mais dont l'installation, la configuration et la prise en main
+    demandent une expertise et un temps d'appropriation importants -- peu compatibles
+    avec la contrainte de simplicité d'utilisation pour un personnel non spécialisé en
+    réseau.
+\end{itemize}
+
+\section{Limites observées}
+
+Cette étude fait ressortir un constat commun : les outils de scan bruts (Nmap) n'offrent
+aucune persistance ni interface, tandis que les solutions grand public manquent de
+fonctionnalités d'historisation et d'alerte adaptées, et que les plateformes de
+supervision professionnelles sont surdimensionnées, coûteuses ou trop complexes pour un
+déploiement léger et autonome au sein d'un seul département IT.
+
+\begin{itemize}
+    \item Aucune solution ne combine à la fois simplicité de déploiement,
+    auto-hébergement et historique exploitable pour ce périmètre restreint ;
+    \item Les solutions commerciales impliquent un coût de licence récurrent, non
+    justifié pour un besoin d'inventaire d'équipements ;
+    \item Les solutions de supervision complètes nécessitent une expertise réseau que le
+    personnel IT non spécialisé ne possède pas nécessairement ;
+    \item Peu de solutions permettent un déploiement conteneurisé simple, cohérent avec
+    les contraintes d'infrastructure de l'hôtel.
+\end{itemize}
+
+\section{Analyse SWOT}
+
+Le tableau~\ref{tab:swot} synthétise les forces, faiblesses, opportunités et menaces
+identifiées pour le projet NetSentry.
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|p{6.3cm}|p{6.3cm}|}
+\hline
+\textbf{Forces} & \textbf{Faiblesses} \\
+\hline
+Développement sur mesure, adapté au besoin réel du département &
+Projet réalisé par un seul stagiaire, sur une durée de deux mois \\
+Basé sur Nmap, un outil de scan éprouvé et fiable &
+Pas de détection de type d'équipement par apprentissage automatique \\
+Auto-hébergé et conteneurisé (Docker), sans coût de licence &
+OS detection (\texttt{nmap -O}) exclue du périmètre (nécessite des privilèges root
+supplémentaires) \\
+Interface simple, pensée pour du personnel non spécialisé en réseau &
+Historique GitHub encore synthétique à ce stade du projet \\
+\hline
+\textbf{Opportunités} & \textbf{Menaces} \\
+\hline
+Sensibilisation croissante des hôtels à la cybersécurité réseau &
+Évolution des équipements vers des adresses MAC aléatoires (confidentialité), limitant
+l'identification par fabricant \\
+Réutilisable pour d'autres hôtels du groupe ou d'autres PME &
+Dépendance à un prestataire externe pour les systèmes métiers, hors périmètre du projet \\
+Base pour des évolutions futures (notifications e-mail, classification par type
+d'appareil) &
+Réseau hôtelier partiellement hors du contrôle direct du département IT interne \\
+\hline
+\end{tabular}
+\caption{Analyse SWOT du projet NetSentry}
+\label{tab:swot}
+\end{table}
+
+\section{Cahier des charges}
+
+Le cadrage du projet a été formalisé dans un cahier des charges remis en début de
+stage, définissant le contexte, les objectifs, le périmètre fonctionnel et non
+fonctionnel, ainsi que les contraintes et livrables attendus.
+
+\subsection{Livrables attendus}
+
+\begin{itemize}
+    \item Code source de l'application (backend, frontend, scripts de scan) ;
+    \item Base de données structurée contenant l'historique des équipements détectés ;
+    \item Tableau de bord fonctionnel de visualisation ;
+    \item Image(s) Docker et instructions de déploiement ;
+    \item Documentation technique et rapport de stage détaillant la démarche, les choix
+    techniques et les résultats obtenus.
+\end{itemize}
+
+\subsection{Contraintes}
+
+Le projet devait être réalisé dans un délai de deux mois, avec un accès limité aux
+systèmes métiers de l'hôtel (gérés par un prestataire externe). Le scan réseau ne
+pouvait être exécuté que sur le réseau interne de l'hôtel, avec l'autorisation du
+département IT, et la solution devait privilégier une base de données relationnelle
+(SQL) en cohérence avec les outils disponibles côté hôtel.
+
+\section{Exigences fonctionnelles}
+
+Les exigences fonctionnelles traduisent les besoins identifiés en fonctionnalités
+concrètes pour NetSentry :
+
+\begin{itemize}
+    \item \textbf{Découverte des équipements} : scanner le réseau local afin
+    d'identifier tous les équipements actuellement connectés (adresse IP, adresse MAC).
+    \item \textbf{Identification des équipements} : déterminer, lorsque c'est possible,
+    le fabricant (via correspondance MAC/OUI) et les ports/services ouverts.
+    \item \textbf{Historique des équipements} : enregistrer chaque scan en base de
+    données afin de conserver un historique (nouveaux équipements, équipements connus,
+    équipements disparus).
+    \item \textbf{Tableau de bord} : visualiser en temps réel la liste des équipements
+    connectés, leur statut, et l'historique d'activité du réseau.
+    \item \textbf{Détection d'anomalies} : identifier et signaler automatiquement tout
+    équipement inconnu apparaissant pour la première fois sur le réseau.
+    \item \textbf{Alertes} : notifier l'administrateur IT en cas de détection d'un
+    équipement non reconnu, et lui permettre de l'acquitter ou de le classer comme
+    connu.
+    \item \textbf{Planification} : exécuter les scans automatiquement selon une
+    fréquence configurable, sans intervention manuelle systématique.
+    \item \textbf{Déploiement} : conteneuriser l'application avec Docker afin de
+    permettre un déploiement simple sur un serveur de l'hôtel.
+\end{itemize}
+
+\section{Exigences non fonctionnelles}
+
+Les exigences non fonctionnelles garantissent la qualité, la sécurité et la performance
+du système, indépendamment de ses fonctionnalités métier :
+
+\begin{itemize}
+    \item \textbf{Ergonomie} : le tableau de bord doit rester simple et lisible pour un
+    personnel non spécialisé en réseau.
+    \item \textbf{Sécurité} : l'accès au tableau de bord doit être protégé par
+    authentification (JWT), et les mots de passe stockés de façon chiffrée (hachage
+    bcrypt).
+    \item \textbf{Confidentialité} : aucune donnée du réseau interne ne doit être
+    transmise à des services externes -- l'identification des fabricants s'appuie sur une
+    base OUI locale, sans appel API externe.
+    \item \textbf{Autonomie} : les scans doivent pouvoir s'exécuter de façon planifiée,
+    sans intervention manuelle systématique.
+    \item \textbf{Portabilité} : l'application doit être conteneurisée (Docker) afin de
+    pouvoir être déployée sur différents environnements.
+    \item \textbf{Performance} : un scan complet du réseau local doit s'exécuter en un
+    temps raisonnable, sans perturber le trafic réseau existant (usage d'un délai
+    d'expiration par hôte).
+    \item \textbf{Maintenabilité} : le code doit être structuré (architecture claire
+    backend/frontend), documenté et versionné (Git).
+\end{itemize}
+
+\section{Méthodologie de travail}
+
+Le projet a été réalisé selon une approche itérative : mise à niveau sur les
+fondamentaux réseau, puis développement progressif du backend, du frontend, du module de
+détection d'anomalies, et enfin conteneurisation et documentation -- chaque étape étant
+validée avant de passer à la suivante. L'organisation du travail au fil du stage (planning
+prévisionnel et suivi des tâches) est détaillée au chapitre~\ref{chap:archi_tech}.
+
+\section{Conclusion}
+
+Cette étude de l'existant a permis de justifier le choix d'une solution développée sur
+mesure plutôt que l'adoption d'un outil tiers, et l'analyse SWOT ainsi que le cahier des
+charges ont permis de cadrer précisément le périmètre du projet. Le chapitre suivant
+présente l'analyse et la conception du système NetSentry, à travers ses diagrammes UML.

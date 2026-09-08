@@ -1,197 +1,46 @@
-\documentclass[12pt,a4paper]{report}
+\documentclass{rapportCS}
+\input{preambule.tex}
 
-% ===================== PACKAGES =====================
-\usepackage[utf8]{inputenc}
-\usepackage[T1]{fontenc}
-\usepackage[margin=2.5cm]{geometry}
-\usepackage{graphicx}
-\usepackage{float}
-\usepackage{xcolor}
-\usepackage{hyperref}
-\usepackage{titlesec}
-\usepackage{fancyhdr}
-\usepackage{enumitem}
-\usepackage{booktabs}
-\usepackage{array}
-\usepackage{longtable}
-\usepackage{setspace}
-\usepackage{caption}
-\usepackage{amsmath}
-\usepackage{tocloft}
-\usepackage{tikz}
-\usetikzlibrary{calc}
-\usepackage{eso-pic}
-\usepackage{xurl}
+\title{Rapport de Stage NetSentry}
 
-% ===================== COULEURS =====================
-\definecolor{primaryblue}{RGB}{20,60,110}
-\definecolor{secondaryteal}{RGB}{40,120,130}
-\definecolor{coverfgreen}{RGB}{79,98,40} % accent vert du rapport NetSentry (4F6228)
-
-% ===================== TITRES DE CHAPITRE =====================
-% Rapport academique en noir et blanc : titres et sous-titres en noir.
-\titleformat{\chapter}[display]
-  {\normalfont\huge\bfseries\color{black}}
-  {\chaptertitlename\ \thechapter}{20pt}{\Huge}
-\titleformat{\section}
-  {\normalfont\Large\bfseries\color{black}}{\thesection}{1em}{}
-\titleformat{\subsection}
-  {\normalfont\large\bfseries\color{black}}{\thesubsection}{1em}{}
-
-% ===================== EN-TETES / PIEDS DE PAGE =====================
-\setlength{\headheight}{14pt}
-\pagestyle{fancy}
-\fancyhf{}
-\renewcommand{\headrulewidth}{0.4pt}
-\renewcommand{\footrulewidth}{0pt}
-\fancyhead[L]{\small\textit{\leftmark}}
-\fancyhead[R]{\small\thepage}
-
-% Le chapitre courant est affiche dans l'en-tete sous la forme "Chapitre X : Titre"
-\renewcommand{\chaptermark}[1]{\markboth{\chaptername\ \thechapter~: #1}{}}
-
-% Page de premiere page de chapitre (style "plain" impose par la classe report) :
-% on garde le meme en-tete (nom du chapitre) et le numero de page, sans texte parasite.
-\fancypagestyle{plain}{%
-  \fancyhf{}
-  \renewcommand{\headrulewidth}{0.4pt}
-  \fancyhead[L]{\small\textit{\leftmark}}
-  \fancyhead[R]{\small\thepage}
-}
-
-% ===================== HYPERREF =====================
-% Rapport academique en noir et blanc : les liens restent cliquables dans le PDF
-% mais ne sont pas mis en couleur (coherent avec une version imprimee).
-\hypersetup{
-  colorlinks=true,
-  linkcolor=black,
-  citecolor=black,
-  urlcolor=black,
-  pdftitle={NetSentry - Rapport de Stage},
-  pdfauthor={Marwane Amal},
-}
-
-\setstretch{1.15}
-
-% Reglages de justification : evite les debordements et les lignes trop
-% aerees en autorisant un peu plus de flexibilite dans la coupure des mots.
-\tolerance=1000
-\emergencystretch=3em
-\hbadness=2000
-
-% ===================== LOCALISATION FRANCAISE MANUELLE =====================
-% (le paquet babel-french n'est pas disponible dans cet environnement de compilation)
-\renewcommand{\contentsname}{Table des mati\`eres}
-\renewcommand{\listfigurename}{Table des figures}
-\renewcommand{\listtablename}{Liste des tableaux}
-\renewcommand{\chaptername}{Chapitre}
-\renewcommand{\tablename}{Tableau}
-\renewcommand{\figurename}{Figure}
-
-% ===================== DOCUMENT =====================
 \begin{document}
 
-% ---------- PAGE DE GARDE ----------
-\begin{titlepage}
+%----------- Informations du rapport ---------
+\input{./contenu/pageDeGarde.tex}
 
-% Bande verte verticale a gauche + triangle en bas a droite
-\AddToShipoutPictureBG*{%
-  \begin{tikzpicture}[remember picture,overlay,x=1cm,y=1cm]
-    % Bande verte a gauche, sur toute la hauteur
-    \fill[coverfgreen] (current page.south west) rectangle
-        ($(current page.north west)+(1.4,0)$);
-    \node[rotate=90, white, font=\bfseries\large] at
-        ($(current page.south west)+(0.7,-6)$) {2\textsuperscript{\`eme} Ann\'ee Cycle d'Ing\'enieur};
-    % Triangle vert en bas a droite
-    \fill[coverfgreen]
-        (current page.south east) --
-        ($(current page.south east)+(-6,0)$) --
-        ($(current page.south east)+(0,6)$) -- cycle;
-    \node[rotate=45, white, font=\bfseries\Large] at
-        ($(current page.south east)+(-2.1,2.1)$) {4IIR};
-  \end{tikzpicture}%
-}
+%----------- Dédicace -------------------
+\input{./contenu/dedicace.tex}
 
-    \centering
-    \vspace*{1cm}
+%----------- Remerciements -------------------
+\input{./contenu/remerciements.tex}
 
-    \includegraphics[width=0.32\linewidth]{figures/logo_emsi.png}
+%----------- Résumé / Abstract -------------------
+\input{./contenu/resume.tex}
+\input{./contenu/abstract.tex}
 
-    \vspace{1cm}
-    {\large \'Ecole Marocaine des Sciences de l'Ing\'enieur (EMSI) -- Tanger \par}
-    {\large Mövenpick H\^otel Tanger -- D\'epartement Informatique (IT) \par}
-
-    \vspace{1.2cm}
-    {\Large \bfseries \scshape Rapport de Stage de Perfectionnement \par}
-
-    \vspace{0.6cm}
-    {\bfseries Fili\`ere \par}
-    {4IIR -- Ing\'enierie Informatique et R\'eseaux \par}
-
-    \vspace{1.5cm}
-    \fbox{%
-      \begin{minipage}{0.8\linewidth}
-        \centering \vspace{0.3cm}
-        \textbf{NetSentry -- D\'eveloppement d'un outil de d\'ecouverte et de cartographie des \'equipements connect\'es au r\'eseau informatique}
-        \vspace{0.3cm}
-      \end{minipage}%
-    }
-
-    \vspace{2cm}
-    {\bfseries R\'ealis\'e par : \par}
-    Marwane Amal
-
-    \vspace{1.2cm}
-    {\bfseries Encadr\'e par \par}
-    Anas \\
-    Mövenpick H\^otel Tanger -- D\'epartement IT
-
-    \vspace{2.5cm}
-    {\large Septembre 2026 \\
-    Ann\'ee Universitaire 2025-2026 \par}
-
-    \vfill
-
-\end{titlepage}
-
-% ---------- PAGES LIMINAIRES ----------
-\pagenumbering{roman}
-
-\input{dedicace}
-\clearpage
-
-\input{remerciements}
-\clearpage
-
-\input{resume}
-\clearpage
-
-\input{abstract}
-\clearpage
-
-\tableofcontents
-\clearpage
-
-\addcontentsline{toc}{chapter}{\listfigurename}
+%------------ Table des matières ----------------
+\tabledematieres
 \listoffigures
-\clearpage
-
-\addcontentsline{toc}{chapter}{\listtablename}
+\newpage
 \listoftables
-\clearpage
+\newpage
 
-\input{abreviations}
-\clearpage
+\input{./contenu/abreviations.tex}
+\newpage
 
-\pagenumbering{arabic}
+%------------ Corps du rapport ----------------
+\input{./contenu/introductionGenerale.tex}
 
-% ---------- CORPS DU DOCUMENT ----------
-\input{introduction}
-\input{chapitre1}
-\input{chapitre2}
-\input{chapitre3}
-\input{chapitre4}
-\input{conclusion}
-\input{bibliographie}
+\input{./contenu/chapitre1.tex}
+\input{./contenu/chapitre2.tex}
+\input{./contenu/chapitre3.tex}
+\input{./contenu/chapitre4.tex}
+\input{./contenu/chapitre5.tex}
+
+\input{./contenu/conclusionGenerale.tex}
+
+\nocite{*}
+\bibliographystyle{ieeetr}
+\bibliography{bibliography}
 
 \end{document}

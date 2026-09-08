@@ -1,0 +1,52 @@
+%------------ Debut Packages ----------------
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage[french]{babel}
+\usepackage{xcolor} % pour ajouter de la couleur (si besoin)
+\usepackage{multirow}
+\usepackage{makecell}
+\usepackage{booktabs}
+\usepackage{float}
+\usepackage{rotating}
+\usepackage{tablefootnote}
+\usepackage{hyperref}
+\usepackage{bookmark}
+\usepackage{pdfpages}
+\usepackage{lipsum}
+\usepackage{listings}
+\usepackage{subcaption}
+\usepackage{url}
+
+\lstdefinelanguage{Shell}{
+  keywords={sudo, docker, nmap, npm, node},
+  sensitive=true,
+  comment=[l]{\#},
+  morestring=[b]",
+  morestring=[b]'
+}
+
+\lstset{
+  language=Shell,
+  basicstyle=\ttfamily\small,
+  numbers=none,
+  backgroundcolor=\color{gray!10},
+  showspaces=false,
+  showstringspaces=false,
+  frame=single,
+  breaklines=true,
+  captionpos=b,
+  keywordstyle=\color{blue}\bfseries,
+  stringstyle=\color{teal},
+  commentstyle=\color{gray}
+}
+
+% Pour personnaliser les entêtes et pieds de pages
+\usepackage{fancyhdr}
+
+\pagestyle{fancy}
+\renewcommand{\chaptermark}[1]{\markboth{\chaptername \ \thechapter.\ #1}{}}
+\renewcommand{\sectionmark}[1]{\markright{\thesection.\ #1}}
+\renewcommand{\thesection}{\arabic{section}}
+
+%------------ Fin Packages ----------------

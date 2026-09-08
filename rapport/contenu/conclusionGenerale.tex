@@ -1,0 +1,81 @@
+\chapter*{Conclusion Générale}
+\label{chapter:Conclusion}
+\addcontentsline{toc}{chapter}{Conclusion Générale}
+\markboth{Conclusion Générale}{}
+\setcounter{section}{0}
+
+Ce rapport a présenté les travaux réalisés durant le stage de perfectionnement effectué
+au sein du département Informatique (IT) du Mövenpick Hôtel de Tanger, portant sur la
+conception et le développement de \textbf{NetSentry}, un outil interne de découverte et
+de cartographie des équipements connectés au réseau local de l'hôtel.
+
+\section{Bilan des réalisations}
+
+Le premier chapitre a permis de poser le contexte général du stage et du projet, en
+mettant en évidence l'absence, au sein du département IT, d'un inventaire fiable des
+équipements connectés au réseau. Le deuxième chapitre a montré, à travers une étude de
+l'existant et une analyse SWOT, qu'aucune solution disponible sur le marché ne combinait
+simplicité de déploiement, auto-hébergement et historique exploitable pour ce périmètre
+restreint, justifiant ainsi le développement d'une solution sur mesure. Le troisième
+chapitre a formalisé la conception du système à travers ses diagrammes UML, et le
+quatrième chapitre a détaillé l'architecture technique retenue -- avec Nmap comme moteur
+de scan -- ainsi que les technologies mobilisées. Le cinquième chapitre a enfin illustré,
+par des captures d'écran, le fonctionnement réel et vérifié de l'outil : découverte des
+équipements, tableau de bord, alertes, historique des scans et déploiement conteneurisé.
+
+\section{Défis rencontrés et solutions apportées}
+
+Plusieurs défis ont marqué la réalisation de ce projet :
+\begin{itemize}
+    \item \textbf{Périmètre accessible limité} : les systèmes métiers de l'hôtel (PMS,
+    point de vente) étant gérés par un prestataire externe, le sujet initial a dû être
+    recentré sur le seul réseau interne, réellement accessible au département IT.
+    \item \textbf{Fiabilité de l'identification des équipements} : certains appareils
+    (notamment les smartphones modernes) utilisent des adresses MAC aléatoires à des
+    fins de confidentialité, rendant leur fabricant impossible à déterminer -- une
+    limitation inhérente à toute identification basée sur l'adresse MAC, documentée plutôt
+    que masquée dans l'outil.
+    \item \textbf{Contrainte de simplicité} : concevoir un tableau de bord exploitable
+    par du personnel non spécialisé en réseau, tout en s'appuyant sur un outil aussi
+    riche que Nmap, a nécessité de limiter volontairement certaines fonctionnalités
+    avancées (détection de système d'exploitation notamment).
+\end{itemize}
+
+\section{Compétences acquises et renforcées}
+
+Ce stage a permis de renforcer plusieurs compétences clés :
+\begin{itemize}
+    \item \textbf{Compétences réseau} : adressage IP/MAC, protocole ARP, notion de
+    ports, et prise en main approfondie de Nmap.
+    \item \textbf{Compétences techniques} : développement backend (Node.js, Express,
+    PostgreSQL), frontend (React), conteneurisation (Docker), et sécurisation d'une API
+    (authentification JWT).
+    \item \textbf{Modélisation et architecture} : conception UML (cas d'utilisation,
+    séquence, modèle conceptuel de données) et mise en \oe{}uvre d'une architecture en
+    couches.
+    \item \textbf{Compétences transversales} : compréhension du fonctionnement d'un
+    département informatique en entreprise et de sa collaboration avec un prestataire
+    externe, autonomie et adaptation du périmètre d'un projet aux contraintes réelles
+    d'une organisation.
+\end{itemize}
+
+\section{Perspectives d'évolution}
+
+Le système développé constitue une base solide pour plusieurs évolutions futures :
+
+\begin{itemize}
+    \item \textbf{Notifications par e-mail} : informer automatiquement l'administrateur
+    IT dès la détection d'un équipement inconnu, en complément de l'alerte affichée dans
+    le tableau de bord.
+    \item \textbf{Classification par type d'appareil} : enrichir l'identification des
+    équipements par une heuristique combinant fabricant et ports ouverts.
+    \item \textbf{Historique Git plus granulaire} : poursuivre le versionnage du projet
+    par des commits plus fréquents au fil des prochaines itérations.
+    \item \textbf{Déploiement en production} : installation de NetSentry sur le serveur
+    définitif de l'hôtel, dans les conditions réelles d'exploitation du réseau.
+\end{itemize}
+
+En conclusion, ce stage a représenté une étape importante dans le parcours de
+l'étudiant, en le confrontant aux réalités d'un développement logiciel mené en
+autonomie, à la croisée du développement web et de l'administration réseau, au service
+d'un besoin réel exprimé par une entreprise d'accueil.

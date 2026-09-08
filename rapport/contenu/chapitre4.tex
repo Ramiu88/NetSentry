@@ -1,0 +1,255 @@
+\chapter{Architecture technique et technologies}
+\label{chap:archi_tech}
+
+\section{Introduction}
+
+Ce chapitre présente l'architecture technique de NetSentry ainsi que les technologies
+mobilisées pour sa réalisation. Une attention particulière est portée à \textbf{Nmap},
+l'outil au c\oe{}ur du moteur de scan, dont le fonctionnement conditionne l'ensemble de la
+chaîne de découverte réseau. Le chapitre se conclut par l'organisation du travail
+retenue durant le stage : planning prévisionnel et suivi des tâches.
+
+\section{Nmap : l'outil au c\oe{}ur du moteur de scan}
+\label{sec:nmap}
+
+\subsection{Présentation}
+
+\textbf{Nmap} (\textit{Network Mapper}) est un scanner réseau open source créé en 1997
+par Gordon Lyon (connu sous le pseudonyme \textit{Fyodor}). Distribué gratuitement pour
+la plupart des systèmes d'exploitation, il est devenu la référence des outils de
+découverte réseau, aussi bien dans un usage d'administration système que dans un cadre
+de sécurité offensive ou défensive. NetSentry s'appuie directement sur le binaire
+\texttt{nmap}, invoqué depuis le backend Node.js via un processus enfant
+(\texttt{child\_process.spawn}), plutôt que sur une bibliothèque tierce -- ce qui garantit
+un contrôle précis des arguments passés et évite tout risque d'injection de commande
+(les arguments sont transmis sous forme de tableau, jamais construits par concaténation
+de chaînes).
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.16\textwidth]{logos/nmap.png}
+    \caption{Logo du projet Nmap (nmap.org)}
+    \label{fig:nmap_logo}
+\end{figure}
+
+\subsection{Découverte d'hôtes par ARP}
+
+Sur un réseau local (LAN), Nmap privilégie le protocole \textbf{ARP} (\textit{Address
+Resolution Protocol}) plutôt que de simples requêtes \textit{ping} (ICMP) pour découvrir
+les hôtes actifs. Une requête ARP est diffusée en broadcast sur le segment local
+(« qui possède l'adresse IP X ? ») ; chaque machine active y répond directement avec son
+adresse MAC. Cette méthode est à la fois plus fiable qu'un ping -- de nombreux pare-feux
+bloquent l'ICMP mais laissent passer l'ARP, indispensable au fonctionnement même du
+réseau local -- et plus riche : elle fournit \textit{gratuitement} l'adresse MAC de
+chaque hôte, sans scan de port supplémentaire. C'est précisément cette adresse MAC que
+NetSentry utilise ensuite comme identifiant stable d'un équipement (une adresse IP,
+attribuée par DHCP, peut changer d'un scan à l'autre).
+
+\subsection{Les deux phases du scan NetSentry}
+
+Le moteur de scan de NetSentry exécute Nmap en deux temps distincts, illustrés au
+diagramme de séquence du chapitre précédent (figure~\ref{fig:sequence}) :
+
+\begin{enumerate}
+    \item \textbf{Découverte} (\texttt{nmap -sn <CIDR>}) : un scan \textit{ping-only},
+    sans énumération de ports, qui identifie rapidement l'ensemble des hôtes actifs sur
+    la plage réseau cible (par exemple \texttt{192.168.1.0/24}) ainsi que leur adresse
+    MAC et, lorsque Nmap parvient à le déterminer, le fabricant associé.
+    \item \textbf{Enrichissement} (\texttt{nmap -sV --top-ports 100}) : un second scan,
+    exécuté uniquement sur les hôtes découverts à l'étape précédente et regroupés en un
+    seul processus (plutôt qu'un processus par hôte), qui identifie les ports ouverts
+    parmi les 100 ports les plus courants ainsi que les services et versions associés.
+\end{enumerate}
+
+\begin{lstlisting}[caption={Exemple des deux commandes Nmap exécutées par NetSentry},label={lst:nmap-cmd}]
+# Phase 1 - decouverte (ARP, sans scan de port)
+nmap -sn 192.168.1.0/24 -oX -
+
+# Phase 2 - enrichissement (ports + services, hotes decouverts uniquement)
+nmap -sV --top-ports 100 -oX - 192.168.1.14 192.168.1.23 ...
+\end{lstlisting}
+
+Ce découpage en deux phases répond à un objectif de performance : limiter
+l'énumération de ports -- l'opération la plus coûteuse en temps -- aux seuls hôtes
+réellement présents, plutôt que de la tenter sur l'ensemble de la plage d'adresses. Un
+délai d'expiration par hôte (\texttt{--host-timeout}) est également appliqué, afin de
+garantir qu'un hôte injoignable ne bloque pas l'ensemble du scan.
+
+\subsection{Choix hors périmètre}
+
+La détection de système d'exploitation (\texttt{nmap -O}) a été volontairement exclue du
+périmètre du projet : elle nécessite des privilèges supplémentaires et un accès direct
+aux sockets bruts, avec une fiabilité variable selon les équipements, ce qui la rend peu
+adaptée à une exécution automatisée et non supervisée. Pour la même raison,
+l'exécution de Nmap au sein du conteneur Docker requiert l'octroi explicite des
+capacités Linux \texttt{NET\_ADMIN} et \texttt{NET\_RAW} (construction de paquets ARP
+bruts), configurées dans \texttt{docker-compose.yml} via \texttt{cap\_add}.
+
+\subsection{Identification du fabricant (OUI)}
+
+L'adresse MAC d'un équipement encode, dans ses trois premiers octets, un identifiant de
+fabricant appelé \textbf{OUI} (\textit{Organizationally Unique Identifier}). NetSentry
+résout ce préfixe via une base de données OUI statique embarquée (bibliothèque
+\texttt{oui}), sans appel à un service externe -- ce qui garantit qu'aucune information
+sur les équipements du réseau interne ne quitte le serveur, conformément à l'exigence de
+confidentialité du chapitre précédent. Un cas particulier mérite d'être signalé : les
+smartphones modernes (iOS et Android) génèrent par défaut une adresse MAC
+\textit{aléatoire} par réseau Wi-Fi rejoint, à des fins de confidentialité. Une telle
+adresse est dite \textit{localement administrée} (le second bit du premier octet est
+positionné à 1) et ne correspond à aucun fabricant réel : NetSentry le détecte
+(\texttt{first\_byte \& 0x02}) et affiche alors un fabricant \textit{inconnu}, non par
+échec de résolution, mais parce que l'adresse elle-même n'est pas une adresse
+constructeur authentique.
+
+\section{Autres technologies utilisées}
+
+\subsection{Backend}
+
+\subsubsection{Node.js et Express}
+Node.js est un environnement d'exécution JavaScript côté serveur, adapté au traitement
+d'opérations asynchrones -- typiquement l'attente de la fin d'un scan Nmap sans bloquer
+le reste de l'application. Express, framework minimaliste construit sur Node.js,
+structure l'API REST de NetSentry (routes d'authentification, de scans, d'équipements et
+d'alertes) et la génération des jetons JWT.
+
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}{0.24\textwidth}
+        \centering
+        \includegraphics[width=0.7\textwidth]{logos/nodejs.png}
+        \caption{Node.js}
+    \end{subfigure}%
+    \begin{subfigure}{0.24\textwidth}
+        \centering
+        \includegraphics[width=0.85\textwidth]{logos/express.png}
+        \caption{Express}
+    \end{subfigure}
+    \caption{Technologies du backend NetSentry}
+    \label{fig:backend_logos}
+\end{figure}
+
+\subsection{Base de données}
+
+\subsubsection{PostgreSQL}
+PostgreSQL est un système de gestion de base de données relationnelle open source,
+réputé pour sa robustesse et le respect strict des propriétés ACID. NetSentry l'utilise
+pour persister les équipements, l'historique des détections (table append-only), les
+scans et les alertes, avec des types natifs adaptés au domaine (\texttt{MACADDR},
+\texttt{INET}, \texttt{JSONB}).
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.14\textwidth]{logos/postgresql.png}
+    \caption{Logo PostgreSQL}
+    \label{fig:postgresql_logo}
+\end{figure}
+
+\subsection{Frontend}
+
+\subsubsection{React}
+React est une bibliothèque JavaScript pour la construction d'interfaces utilisateur par
+composants. Le tableau de bord NetSentry (liste des équipements, détail d'un appareil,
+alertes, historique des scans) est développé en React, avec des mises à jour
+périodiques (\textit{polling}) de l'état des scans et des alertes.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.13\textwidth]{logos/react.png}
+    \caption{Logo React}
+    \label{fig:react_logo}
+\end{figure}
+
+\subsection{Conteneurisation et versionnage}
+
+\subsubsection{Docker}
+Docker permet d'empaqueter chacun des trois services de NetSentry (backend, frontend,
+base de données) dans des conteneurs isolés mais orchestrés ensemble via Docker Compose,
+garantissant un déploiement reproductible sur le serveur de l'hôtel, indépendamment de
+son environnement d'installation.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.16\textwidth]{logos/docker.png}
+    \caption{Logo Docker}
+    \label{fig:docker_logo}
+\end{figure}
+
+\subsubsection{Git}
+Le projet est versionné avec Git et hébergé sur un dépôt GitHub public, permettant de
+suivre l'évolution du code source tout au long du stage.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.1\textwidth]{logos/git.png}
+    \caption{Logo Git}
+    \label{fig:git_logo}
+\end{figure}
+
+\section{Architecture du système}
+
+\subsection{Architecture en couches}
+NetSentry suit une architecture en trois couches, illustrée à la
+figure~\ref{fig:architecture} :
+\begin{itemize}
+    \item \textbf{Couche de scan} : le service Nmap, exécuté avec les privilèges réseau
+    nécessaires (\texttt{cap\_add: NET\_ADMIN, NET\_RAW}), interroge périodiquement les
+    équipements du réseau local ;
+    \item \textbf{Couche logique métier} : l'API backend (Node.js/Express) orchestre les
+    scans, applique la logique de détection d'anomalies et expose une API REST
+    authentifiée (JWT) ;
+    \item \textbf{Couche de persistance et de présentation} : PostgreSQL stocke
+    l'historique, et le tableau de bord React (servi par Nginx en production) est
+    consulté par l'administrateur IT depuis son navigateur.
+\end{itemize}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{figuresChapitres/architecture.png}
+    \caption{Architecture générale de NetSentry et intégration au réseau local de
+    l'hôtel}
+    \label{fig:architecture}
+\end{figure}
+
+Le déploiement cible étant un serveur Linux, le service backend utilise
+\texttt{network\_mode: host} dans \texttt{docker-compose.yml}, afin que le scanner Nmap
+puisse voir le réseau local réel de l'hôtel plutôt que le seul réseau interne (isolé) de
+Docker -- une contrainte indispensable au bon fonctionnement de la découverte ARP en
+conteneur.
+
+\section{Planification du projet}
+
+\subsection{Diagramme de Gantt}
+
+Le planning prévisionnel du stage, tel que défini dans le cahier des charges, répartit
+les huit semaines du stage en cinq grandes phases : prise en main de l'environnement
+réseau, conception et développement du backend, développement du tableau de bord,
+implémentation de la détection d'anomalies, puis conteneurisation et finalisation. La
+figure~\ref{fig:gantt} illustre ce planning sous forme de diagramme de Gantt.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{figuresChapitres/gantt_planning.png}
+    \caption{Diagramme de Gantt du planning prévisionnel du stage}
+    \label{fig:gantt}
+\end{figure}
+
+\subsection{Organisation du travail (Kanban)}
+
+Le suivi de l'avancement des tâches s'est appuyé sur une approche inspirée de Kanban,
+avec un tableau organisé en trois colonnes (à faire, en cours, terminé) permettant de
+visualiser l'état des différentes tâches du projet au fil du stage. La
+figure~\ref{fig:kanban} présente l'état de ce tableau en fin de stage.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.85\textwidth]{figuresChapitres/kanban.png}
+    \caption{Organisation du travail selon la méthode Kanban}
+    \label{fig:kanban}
+\end{figure}
+
+\section{Conclusion}
+
+Ce chapitre a détaillé le fonctionnement de Nmap, c\oe{}ur technique du projet, ainsi que
+l'ensemble des technologies et l'architecture retenues pour NetSentry, et l'organisation
+du travail suivie durant le stage. Le chapitre suivant présente la mise en \oe{}uvre
+concrète de l'outil à travers des captures d'écran.
