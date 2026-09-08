@@ -25,7 +25,7 @@ un contrôle précis des arguments passés et évite tout risque d'injection de 
 (les arguments sont transmis sous forme de tableau, jamais construits par concaténation
 de chaînes).
 
-\begin{figure}[H]
+\begin{figure}[htbp]
     \centering
     \includegraphics[width=0.16\textwidth]{logos/nmap.png}
     \caption{Logo du projet Nmap (nmap.org)}
@@ -112,7 +112,7 @@ le reste de l'application. Express, framework minimaliste construit sur Node.js,
 structure l'API REST de NetSentry (routes d'authentification, de scans, d'équipements et
 d'alertes) et la génération des jetons JWT.
 
-\begin{figure}[H]
+\begin{figure}[htbp]
     \centering
     \begin{subfigure}{0.24\textwidth}
         \centering
@@ -137,7 +137,7 @@ pour persister les équipements, l'historique des détections (table append-only
 scans et les alertes, avec des types natifs adaptés au domaine (\texttt{MACADDR},
 \texttt{INET}, \texttt{JSONB}).
 
-\begin{figure}[H]
+\begin{figure}[htbp]
     \centering
     \includegraphics[width=0.14\textwidth]{logos/postgresql.png}
     \caption{Logo PostgreSQL}
@@ -152,7 +152,7 @@ composants. Le tableau de bord NetSentry (liste des équipements, détail d'un a
 alertes, historique des scans) est développé en React, avec des mises à jour
 périodiques (\textit{polling}) de l'état des scans et des alertes.
 
-\begin{figure}[H]
+\begin{figure}[htbp]
     \centering
     \includegraphics[width=0.13\textwidth]{logos/react.png}
     \caption{Logo React}
@@ -167,7 +167,7 @@ base de données) dans des conteneurs isolés mais orchestrés ensemble via Dock
 garantissant un déploiement reproductible sur le serveur de l'hôtel, indépendamment de
 son environnement d'installation.
 
-\begin{figure}[H]
+\begin{figure}[htbp]
     \centering
     \includegraphics[width=0.16\textwidth]{logos/docker.png}
     \caption{Logo Docker}
@@ -178,13 +178,14 @@ son environnement d'installation.
 Le projet est versionné avec Git et hébergé sur un dépôt GitHub public, permettant de
 suivre l'évolution du code source tout au long du stage.
 
-\begin{figure}[H]
+\begin{figure}[htbp]
     \centering
     \includegraphics[width=0.1\textwidth]{logos/git.png}
     \caption{Logo Git}
     \label{fig:git_logo}
 \end{figure}
 
+\clearpage
 \section{Architecture du système}
 
 \subsection{Architecture en couches}
@@ -202,7 +203,7 @@ figure~\ref{fig:architecture} :
     consulté par l'administrateur IT depuis son navigateur.
 \end{itemize}
 
-\begin{figure}[H]
+\begin{figure}[htbp]
     \centering
     \includegraphics[width=\textwidth]{figuresChapitres/architecture.png}
     \caption{Architecture générale de NetSentry et intégration au réseau local de
@@ -226,7 +227,7 @@ réseau, conception et développement du backend, développement du tableau de b
 implémentation de la détection d'anomalies, puis conteneurisation et finalisation. La
 figure~\ref{fig:gantt} illustre ce planning sous forme de diagramme de Gantt.
 
-\begin{figure}[H]
+\begin{figure}[htbp]
     \centering
     \includegraphics[width=\textwidth]{figuresChapitres/gantt_planning.png}
     \caption{Diagramme de Gantt du planning prévisionnel du stage}
@@ -240,7 +241,7 @@ avec un tableau organisé en trois colonnes (à faire, en cours, terminé) perme
 visualiser l'état des différentes tâches du projet au fil du stage. La
 figure~\ref{fig:kanban} présente l'état de ce tableau en fin de stage.
 
-\begin{figure}[H]
+\begin{figure}[htbp]
     \centering
     \includegraphics[width=0.85\textwidth]{figuresChapitres/kanban.png}
     \caption{Organisation du travail selon la méthode Kanban}

@@ -94,14 +94,14 @@
 \rhead{\nouppercase{\leftmark}} 
 % À droite : le nom du chapitre actuel sans être forcé en majuscules
 
-\rfoot{\thepage} 
+\rfoot{\thepage}
 % Numéro de page à droite du pied de page
 
-\cfoot{\textbf{\titre}} 
-% Titre du rapport centré en bas
+\cfoot{}
+% Pied de page centré laissé vide (pas de répétition du titre sur chaque page)
 
-\lfoot{\trigrammemention} 
-% Trigramme du parcours en bas à gauche
+\lfoot{}
+% Pied de page gauche laissé vide
 }
 
 
@@ -149,7 +149,7 @@
     \centering
     \large
 	\begin{center} 
-	\emph{\textbf{Tuteur(s) EMSI :}}\\ 
+	\emph{\textbf{Encadrant :}}\\
     \tuteuruniv \\ 
 	\end{center}
 \end{minipage}%
