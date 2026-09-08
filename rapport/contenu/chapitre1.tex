@@ -1,11 +1,13 @@
-\chapter{Contexte général du projet}
+\chapter{Contexte général}
 \label{chap:contexte}
 
 \section{Introduction}
 
 Ce chapitre présente le contexte général dans lequel s'inscrit ce stage : l'entreprise
 d'accueil, le département Informatique (IT) au sein duquel le stage s'est déroulé, la
-problématique à l'origine du projet NetSentry, ainsi que les objectifs poursuivis.
+problématique à l'origine du projet NetSentry et les objectifs poursuivis, ainsi qu'une
+étude des solutions déjà disponibles sur le marché et une analyse SWOT justifiant le
+choix d'une solution développée sur mesure.
 
 \section{Organisme d'accueil}
 
@@ -114,9 +116,111 @@ suivants :
     faciliter l'installation et la portabilité sur un serveur de l'hôtel.
 \end{itemize}
 
+\section{Solutions existantes}
+
+Plusieurs catégories d'outils permettent, à des degrés divers, de découvrir ou de
+superviser les équipements d'un réseau local :
+
+\subsection{Outils de scan en ligne de commande}
+\begin{itemize}
+    \item \textbf{Nmap} : scanner réseau open source, extrêmement puissant et précis
+    (découverte d'hôtes, détection de ports et de services), mais qui reste un outil en
+    ligne de commande : il ne conserve aucun historique entre deux exécutions et ne
+    propose ni tableau de bord, ni mécanisme d'alerte natif.
+\end{itemize}
+
+\subsection{Applications grand public}
+\begin{itemize}
+    \item \textbf{Fing} : application mobile de scan réseau simple d'utilisation,
+    orientée particuliers, avec des fonctionnalités d'historique et d'alerte limitées à
+    la version payante, et peu adaptée à un déploiement interne sur un serveur d'hôtel.
+    \item \textbf{Advanced IP Scanner} : utilitaire Windows léger de découverte
+    d'équipements, sans persistance des résultats ni planification automatique.
+\end{itemize}
+
+\subsection{Solutions de supervision professionnelles}
+\begin{itemize}
+    \item \textbf{PRTG Network Monitor} : solution de supervision réseau complète et
+    reconnue, mais commerciale, dont le coût de licence et la richesse fonctionnelle
+    dépassent largement les besoins d'un simple inventaire d'équipements pour un
+    département IT hôtelier.
+    \item \textbf{Zabbix / Nagios} : plateformes de supervision open source très
+    puissantes, mais dont l'installation, la configuration et la prise en main
+    demandent une expertise et un temps d'appropriation importants -- peu compatibles
+    avec la contrainte de simplicité d'utilisation pour un personnel non spécialisé en
+    réseau.
+\end{itemize}
+
+\section{Limites observées}
+
+Cette étude fait ressortir un constat commun : les outils de scan bruts (Nmap) n'offrent
+aucune persistance ni interface, tandis que les solutions grand public manquent de
+fonctionnalités d'historisation et d'alerte adaptées, et que les plateformes de
+supervision professionnelles sont surdimensionnées, coûteuses ou trop complexes pour un
+déploiement léger et autonome au sein d'un seul département IT.
+
+\begin{itemize}
+    \item Aucune solution ne combine à la fois simplicité de déploiement,
+    auto-hébergement et historique exploitable pour ce périmètre restreint ;
+    \item Les solutions commerciales impliquent un coût de licence récurrent, non
+    justifié pour un besoin d'inventaire d'équipements ;
+    \item Les solutions de supervision complètes nécessitent une expertise réseau que le
+    personnel IT non spécialisé ne possède pas nécessairement ;
+    \item Peu de solutions permettent un déploiement conteneurisé simple, cohérent avec
+    les contraintes d'infrastructure de l'hôtel.
+\end{itemize}
+
+\clearpage
+\section{Analyse SWOT}
+
+Le tableau~\ref{tab:swot} synthétise les forces, faiblesses, opportunités et menaces
+identifiées pour le projet NetSentry.
+
+\begin{table}[htbp]
+\centering
+\begin{tabular}{|p{6.3cm}|p{6.3cm}|}
+\hline
+\textbf{Forces} & \textbf{Faiblesses} \\
+\hline
+Développement sur mesure, adapté au besoin réel du département &
+Projet réalisé par un seul stagiaire, sur une durée de deux mois \\
+Basé sur Nmap, un outil de scan éprouvé et fiable &
+Pas de détection de type d'équipement par apprentissage automatique \\
+Auto-hébergé et conteneurisé (Docker), sans coût de licence &
+OS detection (\texttt{nmap -O}) exclue du périmètre (nécessite des privilèges root
+supplémentaires) \\
+Interface simple, pensée pour du personnel non spécialisé en réseau &
+Historique GitHub encore synthétique à ce stade du projet \\
+\hline
+\textbf{Opportunités} & \textbf{Menaces} \\
+\hline
+Sensibilisation croissante des hôtels à la cybersécurité réseau &
+Évolution des équipements vers des adresses MAC aléatoires (confidentialité), limitant
+l'identification par fabricant \\
+Réutilisable pour d'autres hôtels du groupe ou d'autres PME &
+Dépendance à un prestataire externe pour les systèmes métiers, hors périmètre du projet \\
+Base pour des évolutions futures (notifications e-mail, classification par type
+d'appareil) &
+Réseau hôtelier partiellement hors du contrôle direct du département IT interne \\
+\hline
+\end{tabular}
+\caption{Analyse SWOT du projet NetSentry}
+\label{tab:swot}
+\end{table}
+
+\section{Méthodologie de travail}
+
+Le projet a été réalisé selon une approche itérative : mise à niveau sur les
+fondamentaux réseau, puis développement progressif du backend, du frontend, du module de
+détection d'anomalies, et enfin conteneurisation et documentation -- chaque étape étant
+validée avant de passer à la suivante. L'organisation du travail au fil du stage (planning
+prévisionnel et suivi des tâches) est détaillée au chapitre~\ref{chap:archi_tech}.
+
 \section{Conclusion}
 \enlargethispage{\baselineskip}
 
-Ce chapitre a posé le cadre général du stage : l'entreprise d'accueil, le département
-Informatique, ainsi que la problématique et les objectifs du projet NetSentry. Le
-chapitre suivant présente l'étude de l'existant et la méthodologie de travail retenue.
+Ce chapitre a posé le cadre général du stage -- entreprise d'accueil, département
+Informatique, problématique et objectifs -- et a montré, via l'étude de l'existant et
+l'analyse SWOT, qu'aucune solution du marché ne répondait à ce besoin, justifiant une
+solution sur mesure. Le chapitre suivant présente l'analyse des besoins et la conception
+du système.
