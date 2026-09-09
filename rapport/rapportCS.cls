@@ -55,7 +55,7 @@
 \RequirePackage[hidelinks]{hyperref} 
 % Active les hyperliens sans les encadrer de couleur (liens discrets)
 
-\RequirePackage[left=3cm,right=3cm,top=3cm,bottom=5cm,headheight=15mm]{geometry} 
+\RequirePackage[left=3cm,right=3cm,top=3cm,bottom=3cm,headheight=15mm]{geometry}
 % Définit les marges du document
 
 
